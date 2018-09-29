@@ -1,0 +1,75 @@
+//Implement a basic rate limiter that limits requests from clients to a max of 100 requests per second
+
+//for testing, lets use rate limit value as 5 requests over the past second
+//we ll use milliseconds for measurement
+/*
+0-------------1-------------2-------------3
+ 1        1111111111111
+   
+*/
+//RATE LIMITER - 5 requests per second per client
+
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+import java.util.stream.Collectors;
+
+
+
+
+public class Solution {
+    static Hashtable<String,Integer> table=new Hashtable<String,Integer>();
+    
+    public static void main(String args[] ) throws Exception {
+        System.out.println(isAllowed("a"));
+        System.out.println(isAllowed("b"));
+        System.out.println(isAllowed("a"));
+        System.out.println(isAllowed("c"));
+        System.out.println(isAllowed("a"));
+        System.out.println(isAllowed("a"));
+        System.out.println(isAllowed("a"));
+        System.out.println(isAllowed("a"));
+        System.out.println(isAllowed("a"));
+        Thread.sleep(1000);
+        System.out.println(isAllowed("a"));
+        System.out.println(isAllowed("a"));
+        System.out.println(isAllowed("a"));
+        System.out.println(isAllowed("a"));
+        System.out.println(isAllowed("a"));
+        
+    }
+    
+    private static boolean isAllowed(String clientId) {
+        if(clientId==null){
+            return true;
+        }
+        String unique_id=clientId+(System.currentTimeMillis()/1000);
+        
+        if(table.containsKey(unique_id)){
+            int requests=table.get(unique_id);
+            if(requests+1>5){
+                return false;
+            }else{
+                table.put(unique_id,requests+1);
+            }
+        }else{
+            Pattern pattern = Pattern.compile(clientId+".*");
+            //To remove the past client info from table to be more efficient
+            List<String> values  = table.keySet()
+                .stream()
+                .filter(string -> pattern.matcher(string).matches())
+                .collect(Collectors.toList());
+                if(!values.isEmpty()){
+                    System.out.println("Removing prior client..");
+                    System.out.println("V: "+values.get(0));
+
+                      table.remove(values.get(0));
+                }
+            table.put(unique_id,1);
+        }
+        return true;
+        
+    }
+}

@@ -1,0 +1,52 @@
+package test;
+
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+public class MessageChunks {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		String text="Hi Sivasrinivas,      your uber is arriving now!";
+		String tes="!!!!";
+		int limit=25;
+        List<String> result=new ArrayList<String>();
+        
+        getMsgChunks1(text,limit,result);
+        System.out.println(result.size());
+        for(String s:result){
+        	System.out.println(s.length());
+        	System.out.println(s.toString().trim());
+        }
+	}
+	private static List<String> getMsgChunks(String txt,int n,List<String> res){
+		
+		String pat="\\b[a-zA-Z0-9,\\.;\\s!]{0,25}\\b";
+		Pattern pattern=Pattern.compile(pat);
+		Matcher match=pattern.matcher(txt);
+		while(match.find()){
+			res.add(match.group(0));
+		}
+		return res;
+		
+	}
+private static List<String> getMsgChunks1(String txt,int n,List<String> res){
+		
+		String[] tok=txt.split(" ");
+		StringBuilder sb=null;
+		for(int i=0;i<tok.length;i++){
+			if(sb!=null && sb.length()+tok[i].length()+1<=n){
+				sb.append(" "+tok[i]);
+			}else{
+				if(sb!=null){
+				res.add(sb.toString());
+				}
+				sb=new StringBuilder(tok[i]);
+			}
+		}
+		res.add(sb.toString());
+		return res;
+	}
+
+}
